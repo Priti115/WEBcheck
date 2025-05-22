@@ -38,7 +38,7 @@
 
 ## 📸 Screenshot
 
-<img src="screenshot.png" alt="WEBcheck UI" width="700"/>
+<img src="webcheck.png" alt="WEBcheck UI" width="700"/>
 
 ---
 
