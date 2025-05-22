@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-r from-blue-200 via-indigo-200 to-pink-200 font-sans">
+
+    <div class="container mx-auto p-8">
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600">Website Analyzer</h1>
+            <p class="text-lg text-gray-700 mt-4">Analyze your website’s overall performance and get suggestions for improvement.</p>
+        </div>
+
+        <div class="max-w-lg mx-auto bg-white shadow-2xl rounded-xl p-6 border-2 border-gray-100">
+            <div class="mb-6">
+                <label for="url" class="block text-xl font-semibold text-gray-800 mb-2">Enter Website URL</label>
+                <input id="url" type="text" class="w-full p-4 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="https://example.com">
+            </div>
+
+            <button id="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">Analyze Website</button>
+
+            <!-- Results Section -->
+            <div id="result" class="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-300 text-gray-700">
+                <!-- Results will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('submit').addEventListener('click', function() {
+            const url = document.getElementById('url').value;
+
+            // Call the Flask API to analyze the website
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ website_url: url })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Create a table with the response data
+                let resultHTML = `
+                    <table class="min-w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-700">Parameter</th>
+                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-700">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.keys(data).map(key => `
+                                <tr class="border-b">
+                                    <td class="py-2 px-4 text-sm text-gray-700">${key}</td>
+                                    <td class="py-2 px-4 text-sm text-gray-700">${data[key]}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                // Display the result
+                document.getElementById('result').innerHTML = resultHTML;
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = "<p class='text-red-500'>An error occurred while fetching the data.</p>";
+            });
+        });
+    </script>
+
+</body>
+</html>
